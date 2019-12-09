@@ -50,31 +50,40 @@ public class UserController {
                           @RequestParam("town") String town, @RequestParam("street") String street, @RequestParam("house") String house,
                           @RequestParam("role") String title) {
         String value;
-        User user = new User();
-        Adress adress = new Adress();
-        Role role = new Role();
-        user.setLogin(login);
-        user.setPassword(password);
-        user.setAge(age);
-        user.setName(name);
-        user.setDescription(description);
-        adress.setTown(town);
-        adress.setStreet(street);
-        adress.setHouse(house);
-        user.setAdress(adress);
-        role.setTitle(title);
-        role.addUsers(user);
-        user.setRole(role);
-        servicesDao.saveUser(user);
-        model.addAttribute(user);
-        value = "enterAccount";
+        if (servicesDao.checkLogin(login)) {
+            model.addAttribute("message", "Login out");
+            value = "error";
+        } else {
+            User user = new User();
+            Adress adress = new Adress();
+            Role role = new Role();
+            user.setLogin(login);
+            user.setPassword(password);
+            user.setAge(age);
+            user.setName(name);
+            user.setDescription(description);
+            adress.setTown(town);
+            adress.setStreet(street);
+            adress.setHouse(house);
+            user.setAdress(adress);
+            role.setTitle(title);
+            role.addUsers(user);
+            user.setRole(role);
+            System.out.println(user);
+            servicesDao.saveUser(user);
+            model.addAttribute(user);
+
+            value = "enterAccount";
+        }
+
         return value;
     }
 
     @RequestMapping(value = "/delete", method = RequestMethod.GET)
-    public String del(){
+    public String del() {
         return "delete";
     }
+
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     public String delete(@RequestParam("id") int id) {
         servicesDao.delete(id);
@@ -82,11 +91,12 @@ public class UserController {
     }
 
     @RequestMapping(value = "/update", method = RequestMethod.GET)
-    public String up(){
+    public String up() {
         return "update";
     }
+
     @RequestMapping(value = "/updateOne", method = RequestMethod.GET)
-    public String upOne(){
+    public String upOne() {
         return "updateOne";
     }
 
@@ -96,20 +106,25 @@ public class UserController {
                          @RequestParam("town") String town, @RequestParam("street") String street, @RequestParam("house") String house,
                          @RequestParam("role") String title) {
         String value;
-        User user = servicesDao.userId(id);
-        user.setId(id);
-        user.setLogin(login);
-        user.setPassword(password);
-        user.setAge(age);
-        user.setName(name);
-        user.setDescription(description);
-        user.getAdress().setTown(town);
-        user.getAdress().setStreet(street);
-        user.getAdress().setHouse(house);
-        user.getRole().setTitle(title);
-        servicesDao.update(user);
-        model.addAttribute(user);
-        value = "enterAccount";
+        if (servicesDao.checkLogin(login)) {
+            model.addAttribute("message", "Login out");
+            value = "error";
+        } else {
+            User user = servicesDao.userId(id);
+            user.setId(id);
+            user.setLogin(login);
+            user.setPassword(password);
+            user.setAge(age);
+            user.setName(name);
+            user.setDescription(description);
+            user.getAdress().setTown(town);
+            user.getAdress().setStreet(street);
+            user.getAdress().setHouse(house);
+            user.getRole().setTitle(title);
+            servicesDao.update(user);
+            model.addAttribute(user);
+            value = "enterAccount";
+        }
         return value;
     }
 }

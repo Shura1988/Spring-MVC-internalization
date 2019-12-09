@@ -18,49 +18,39 @@ public class UserDaoImpl implements UserDao {
     @Autowired
     private SessionFactory sessionFactory;
 
-    Transaction tr1 = null;
     @Override
     public User userId(int id) {
-        Session session =sessionFactory.openSession();
-        tr1 = session.beginTransaction();
+        Session session = sessionFactory.getCurrentSession();
         User user = session.get(User.class, id);
-        tr1.commit();
-        session.close();
-
         return user;
     }
 
     @Override
     public void saveUser(User user) {
         try {
-            Session session =sessionFactory.openSession();
-            tr1 = session.beginTransaction();
+            Session session = sessionFactory.getCurrentSession();
             session.persist(user);
-            tr1.commit();
-            session.close();
         } catch (Exception e) {
-            if (tr1 != null) {
-                tr1.rollback();
-            }
             e.printStackTrace();
         }
     }
 
     @Override
     public void update(User user) {
-
-        Session session = sessionFactory.getCurrentSession();
-        session.merge(user);
+        try {
+            Session session = sessionFactory.getCurrentSession();
+            session.merge(user);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void delete(int id) {
         try {
-            Session session =sessionFactory.openSession();
-            Transaction tx1 = session.beginTransaction();
+            Session session = sessionFactory.getCurrentSession();
             session.delete(session.get(User.class, id));
-            tx1.commit();
-            session.close();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -68,33 +58,30 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public List<User> findAll() {
+
         Session session = sessionFactory.getCurrentSession();
-          return session.createNativeQuery("select * from mvc3.user", User.class).list();
+        return session.createNativeQuery("select * from mvc3.user", User.class).list();
     }
 
     public User showUser(String login, String password) {
-        Session session =sessionFactory.openSession();
-        tr1 = session.beginTransaction();
+
+        Session session = sessionFactory.getCurrentSession();
         Query query = (Query) session.createNativeQuery("select * from user WHERE login= :login and password= :password", User.class);
         query.setParameter("login", login);
         query.setParameter("password", password);
         User user = (User) query.uniqueResult();
-        tr1.commit();
-        session.close();
+
         return user;
 
     }
 
     public boolean checkLogin(String login) {
-        Session session =sessionFactory.openSession();
-        tr1 = session.beginTransaction();
+        Session session = sessionFactory.getCurrentSession();
         Query query = (Query) session.createNativeQuery("select * from user WHERE login= :login", User.class);
         query.setParameter("login", login);
-        tr1.commit();
-        session.close();
-        try{
+        try {
             query.getSingleResult();
-        }catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
         return true;

@@ -19,7 +19,7 @@
         <br>
         <spring:message code="message.Age"/>: <br>
         <input required type="number" size="3" name="age" min="1" max="120" value="1"
-               placeholder="<spring:message code="message.Age"/>"/><br>
+               placeholder="${message}"/><br>
         <br>
         <spring:message code="message.Name"/> :<br>
         <input required type="text" name="name" placeholder="<spring:message code="message.Name"/>"/><br>
